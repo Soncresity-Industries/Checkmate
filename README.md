@@ -43,7 +43,7 @@ Checkmate has been stress-tested with 1000+ active monitors without any particul
 
 ## Demo
 
-You can see the latest build of [Checkmate](https://checkmate-demo.bluewavelabs.ca/) in action. 
+You can see the latest build of [Checkmate](https://demo.checkmate.so/) in action. 
 
 The username is demouser@demo.com and the password is Demouser1! (just a note that we update the demo server from time to time, so if it doesn't work for you, please ping us on the Discussions channel).
 
@@ -114,6 +114,15 @@ Feel free to ask questions or share your ideas - we'd love to hear from you!
 
 If you would like to sponsor an additional feature, [see this page](https://checkmate.so/sponsored-features).
 
+## Monitor Lifecycle
+
+1. A monitor executes a check (HTTP / ping / port / hardware via Capture agent)
+2. The result is stored (success/failure + response time)
+3. Recent check results are evaluated against the monitor's configured status change threshold
+4. If the monitor's status change threshold is met and the current status is not equal to the previous status, the monitor's state changes (e.g. `initializing`, `up`, `down`, `breached`)
+5. Upon a state change: an incident is either created or resolved, depending on the monitor's current status
+6. Notifications are triggered based on configuration
+
 ## Screenshots
 
 <p>
@@ -171,8 +180,3 @@ Here's how you can contribute:
 
 [![Star History Chart](https://api.star-history.com/svg?repos=bluewave-labs/checkmate&type=Date)](https://star-history.com/#bluewave-labs/Checkmate&Date)
 
-## Our sponsors
-
-Thanks to [Gitbook](https://gitbook.io/) for giving us a free tier for their documentation platform, and [Poeditor](https://poeditor.com/) providing us a free account to use their i18n services. If you would like to sponsor Checkmate, please send an email to hello@bluewavelabs.ca
-
-If you would like to sponsor a feature, [see this page](https://checkmate.so/sponsored-features).
