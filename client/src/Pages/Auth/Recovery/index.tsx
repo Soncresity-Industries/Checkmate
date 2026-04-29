@@ -16,8 +16,13 @@ const ForgotPasswordPage = () => {
 		defaultValues: defaults,
 	});
 
-	const onSubmit = async ({/*data: RecoveryFormData*/}) => {
-		{/* Disabled
+	const onSubmit = async (
+		{
+			/*data: RecoveryFormData*/
+		}
+	) => {
+		{
+			/* Disabled
 		if (loading) return;
 
 		const result = await post("/auth/recovery/request", data);
@@ -25,7 +30,8 @@ const ForgotPasswordPage = () => {
 		if (result?.success) {
 			// Navigate to Check email page
 		}
-		*/}
+		*/
+		}
 	};
 
 	return (
