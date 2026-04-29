@@ -18,7 +18,7 @@
 		"format-check": "prettier --check ."
 	},
 	"lint-staged": {
-		"**/*": "prettier --write"
+		"**/*.{ts,js,json,jsx,tsx}": "prettier --write"
 	},
 	"keywords": [],
 	"author": "",

@@ -1,0 +1,33 @@
+# Binary and non-text files
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# Special files without extensions
+NOTICE
+LICENSE
+
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+

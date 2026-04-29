@@ -1,4 +1,9 @@
 #!/bin/sh
 echo "Running lint-staged..."
-cd client && npx lint-staged && cd ..
-cd server && npx lint-staged && cd ..
+cd "$(dirname "$0")/.." || exit 1
+
+# Run lint-staged in client directory
+(cd client && npx lint-staged) || exit 1
+
+# Run lint-staged in server directory
+(cd server && npx lint-staged) || exit 1

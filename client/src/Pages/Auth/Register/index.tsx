@@ -1,12 +1,22 @@
-import { BaseAuthPage, TextLink } from "@/Components/design-elements";
-import { useForm } from "react-hook-form";
+import { BaseAuthPage } from "@/Components/design-elements";
+import { Button, TextField } from "@/Components/inputs";
+import Alert from "@mui/material/Alert";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useRegisterForm } from "@/Hooks/useRegisterForm";
 import type { RegisterFormData } from "@/Validation/register";
 import { useTranslation } from "react-i18next";
-import { usePost, useGet } from "@/Hooks/UseApi";
+import { useLazyGet, usePost } from "@/Hooks/UseApi";
+import { setAuthState } from "@/Features/Auth/authSlice";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import type { AuthResponse } from "@/Types/User";
+import { useEffect, useRef, useState } from "react";
+
+interface RegisterPayload {
+	user: Omit<RegisterFormData, "confirm">;
+	token?: string;
+}
 
 interface InviteVerifyResponse {
 	email: string;
@@ -15,26 +25,30 @@ interface InviteVerifyResponse {
 const RegisterPage = () => {
 	const { t } = useTranslation();
 	const { schema, defaults } = useRegisterForm();
+	const { post, loading } = usePost<RegisterPayload, AuthResponse>();
+	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { token } = useParams<{ token?: string }>();
 
 	const { post: verifyToken } = usePost<{ token: string }, InviteVerifyResponse>();
 	const hasVerified = useRef(false);
 
-	const { data: superAdminExists, isLoading: isCheckingAdmin } = useGet<boolean>(
-		token ? null : "/auth/users/superadmin"
-	);
+	const [isCheckingAdmin, setIsCheckingAdmin] = useState(!token);
+	const { get } = useLazyGet<boolean>();
 
-	const { handleSubmit, reset } = useForm<RegisterFormData>({
+	useEffect(() => {
+		if (token) return;
+		get("/auth/users/superadmin").then((res) => {
+			if (res?.data === true) navigate("/login", { replace: true });
+			else setIsCheckingAdmin(false);
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const { control, handleSubmit, setError, reset } = useForm<RegisterFormData>({
 		resolver: zodResolver(schema),
 		defaultValues: defaults,
 	});
-
-	useEffect(() => {
-		if (superAdminExists === true) {
-			navigate("/login", { replace: true });
-		}
-	}, [superAdminExists, navigate]);
 
 	useEffect(() => {
 		if (!token || hasVerified.current) return;
@@ -54,8 +68,7 @@ const RegisterPage = () => {
 
 	if (isCheckingAdmin) return null;
 
-	const onSubmit = async ({/*data: RegisterFormData*/}) => {
-		{/* Disabled
+	const onSubmit = async (data: RegisterFormData) => {
 		if (loading) return;
 
 		const { confirm, ...userData } = data;
@@ -73,7 +86,6 @@ const RegisterPage = () => {
 				setError("email", { message: result.msg });
 			}
 		}
-		*/}
 	};
 
 	return (
@@ -83,7 +95,23 @@ const RegisterPage = () => {
 			title={t("pages.auth.register.title")}
 			subtitle={t("pages.auth.register.subtitle")}
 		>
-			{/* Disabled
+			{!token && (
+				<Alert
+					severity="info"
+					icon={false}
+					sx={(theme) => ({
+						fontSize: 13,
+						lineHeight: 1.55,
+						color: theme.palette.text.secondary,
+						backgroundColor: theme.palette.action.hover,
+						border: `1px solid ${theme.palette.divider}`,
+						borderRadius: 1,
+						"& .MuiAlert-message": { padding: 0 },
+					})}
+				>
+					{t("pages.auth.register.setupNotice")}
+				</Alert>
+			)}
 			<Controller
 				name="firstName"
 				control={control}
@@ -159,13 +187,6 @@ const RegisterPage = () => {
 			>
 				{t("pages.auth.register.submit")}
 			</Button>
-			*/}
-			<TextLink
-				alignSelf={"center"}
-				text="Registration is currently disabled. Please contact the administrator to create an account."
-				linkText="Go back to login"
-				href="/login"
-			/>
 		</BaseAuthPage>
 	);
 };
